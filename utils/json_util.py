@@ -2,22 +2,44 @@ import os
 newline = "\n"
 tab = "\t"
 
+class CreateArchivesError(Exception):
+    pass
+
+class ClosesArchivesError(Exception):
+    pass
+
 def create_arq(diretorio,nome):
-    create_dir(diretorio)
-    arq = open(diretorio + "/" + nome+".py", "w")
-    return arq
+    try:
+        create_dir(diretorio)
+        arq = open(diretorio + "/" + nome+".py", "w")
+        return arq
+    except Exception as e:
+        print(e)
+        raise CreateArchivesError("Error creating files")
 
 def create_config(diretorio,nome):
-    create_dir(diretorio)
-    config = open(diretorio + "/" + nome+".json", "w")
-    return config
+    try: 
+        create_dir(diretorio)
+        config = open(diretorio + "/" + nome+".json", "w")
+        return config
+    except Exception as e:
+        print(e)
+        raise CreateArchivesError("Error creating files")
 
 def create_dir(diretorio):
-    if not os.path.isdir(diretorio):
-        os.mkdir(diretorio)
+    try:
+        if not os.path.isdir(diretorio):
+            os.mkdir(diretorio)
+    except Exception as e:
+        print(e)
+        raise CreateArchivesError("Error creating directory")
 
 def close_arq(arq):
-    arq.close()
+    try:
+        arq.close()
+    except Exception as e:
+        print(e)
+        raise ClosesArchivesError("Error trying close archive")
     
 def write_imports(arq):
     imports = list()
@@ -50,7 +72,6 @@ def finalConfig(config):
     config.writelines(lines)
     
 def create_util(util,host):
-    
     lines = list()
     lines.append("def get_baseUrl():" + newline)
     lines.append(f"{tab}url='{host}'{newline}")

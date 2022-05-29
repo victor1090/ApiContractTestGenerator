@@ -8,7 +8,7 @@ import json
 import sys
 from Classes import Base,Objects,Schemas,Paths, Methods, Url, Parameters, Responses
 from TestGenerator import *
-with open("swaggerPoc2.0.json", encoding='utf-8') as arq:
+with open("swaggerRecharges2.0.json", encoding='utf-8') as arq:
     dados = json.load(arq)
 
 try:
@@ -59,7 +59,7 @@ else:
     for urls in paths.urls:
         try:
             TestGenerator(base_Data, urls, objects)
-            print(f"Os testes para a url {url.url} foi gerado na pasta Testes")
+            print(f"Os testes para a url {urls.url} foi gerado na pasta Testes")
         except Exception as e:
             print(f"Não foi possível gerar os testes para a url {urls.url}")
             print(e)

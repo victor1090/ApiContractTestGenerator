@@ -15,6 +15,9 @@ integer = "int"
 array = "list"
 count_test = 0
 
+class TypeNotDefinedError(Exception):
+    pass
+
 class TestGenerator():
         
     def toType(self,string):
@@ -28,8 +31,10 @@ class TestGenerator():
             return "dict"
         elif(string=="boolean"):
             return "bool"
+        elif(string=="number"):
+            return "float"
         else:
-            print(string)
+            raise TypeNotDefinedError(f"The type {string} used in the documentation is not mapped to python type!")
         
     def mappingObjects(self,schema,recuo):
         lines = list()
@@ -250,14 +255,6 @@ class TestGenerator():
             if(responses.schemas != None):
                 lines.append(f"{doubletab}response_data = response.json()"+newline) #Transformando a resposta da request em json
                 lines.append("".join(self.createAssertsResponseSchemas(responses.schemas)))
-               # if(len(responses.schemas) > 1):
-                  #  print(responses.schemas)
-                 #   broker = responses.schemas["items"]["$ref"].split("/")
-                #else:
-                 #   broker = responses.schemas["$ref"].split("/")
-                #schema = self.objects.search(broker[-1])
-                #lines.append(f"{doubletab}response_data = response.json()"+newline) #Transformando a resposta da request em json
-                #lines.append("".join(self.createAssertsResponse(schema,"")))
         arq.writelines(lines)
         
         
@@ -269,73 +266,55 @@ class TestGenerator():
         return lines
     
     def setUp(self):
-        #Diretorio onde ficaram os testes criados
-        create_dir("Testes")
-        #criação de um diretorio com arquivo utils
-        utils = create_arq("Testes/util","testes_util")
-        create_util(utils,self.base.hostName+self.base.basePath)
-        close_arq(utils)
-        
-        #Criação do diretorio e arquivos do teste
-        print("-Criando diretorio e arquivos do teste")
-        
-        path_arq = self.path.url.replace("/", "_");
-        
-        #Teste de Sucesso
-        print("-Criando Testes de Sucesso")
-        arq = create_arq("Testes/"+path_arq,path_arq+"Sucessfull")
-        config = create_config("Testes/"+path_arq,"ConfigurationSucessfull")
-        initialConfig(config)
-        write_imports(arq)
-        write_base(arq,"AutomaticTestSucessfull","ConfigurationSucessfull")
-        #Teste de Falha
-        print("-Criando Testes de Falha")
-        arq2 = create_arq("Testes/"+path_arq,path_arq+"Unsucessfull")
-        config2 = create_config("Testes/"+path_arq,"ConfigurationUnsucessfull")
-        initialConfig(config2)
-        write_imports(arq2)
-        write_base(arq2,"AutomaticTestUnsucessfull","ConfigurationUnsucessfull")
-        #Ranges os responses
-        range_sucessfull = [200,299]
-        range_unsucessfull = [400,599]
-        for method in self.path.methods:
-            self.createTeste(arq,method,False,range_sucessfull,config)
-            self.createTeste(arq2,method,False,range_unsucessfull,config2)
-            if(not method.isOnlyRequiredParams()):
-                self.createTeste(arq,method,True,range_sucessfull,config)   
-                self.createTeste(arq2,method,True,range_unsucessfull,config2)
-        
-        #Rodapé dos arquivos
-        arq.writelines(self.writeFloor())
-        arq2.writelines(self.writeFloor())
-        finalConfig(config)
-        finalConfig(config2)
-        
-        
-        close_arq(arq)
-        close_arq(config)
-        close_arq(arq2)
-        close_arq(config2)
-    
-    
-        
-        
-    
-        
-        
-    
+        try:
+            #Directory where the tests were created
+            create_dir("Testes")
+            #creating a directory with utils file
+            utils = create_arq("Testes/util","testes_util")
+            create_util(utils,self.base.hostName+self.base.basePath)
+            close_arq(utils)
+            #Creating the test directory and files
+            print("-Criando diretorio e arquivos do teste")
+            path_arq = self.path.url.replace("/", "_");
+            #Sucessfull test
+            print("-Criando Testes de Sucesso")
+            arq = create_arq("Testes/"+path_arq,path_arq+"Sucessfull")
+            config = create_config("Testes/"+path_arq,"ConfigurationSucessfull")
+            initialConfig(config)
+            write_imports(arq)
+            write_base(arq,"AutomaticTestSucessfull","ConfigurationSucessfull")
+            #Unsucessfull test
+            print("-Criando Testes de Falha")
+            arq2 = create_arq("Testes/"+path_arq,path_arq+"Unsucessfull")
+            config2 = create_config("Testes/"+path_arq,"ConfigurationUnsucessfull")
+            initialConfig(config2)
+            write_imports(arq2)
+            write_base(arq2,"AutomaticTestUnsucessfull","ConfigurationUnsucessfull")
+            #Ranges of responses
+            range_sucessfull = [200,299]
+            range_unsucessfull = [400,599]
+            for method in self.path.methods:
+                self.createTeste(arq,method,False,range_sucessfull,config)
+                self.createTeste(arq2,method,False,range_unsucessfull,config2)
+                if(not method.isOnlyRequiredParams()):
+                    self.createTeste(arq,method,True,range_sucessfull,config)   
+                    self.createTeste(arq2,method,True,range_unsucessfull,config2)
+            #write floor of archives
+            arq.writelines(self.writeFloor())
+            arq2.writelines(self.writeFloor())
+            finalConfig(config)
+            finalConfig(config2)
+            #Closes all archives
+            close_arq(arq)
+            close_arq(config)
+            close_arq(arq2)
+            close_arq(config2)
+        except Exception as e:
+            print(e)
+            
         
     def __init__(self, base, path, objects):
         self.base = base
         self.path = path
         self.objects = objects
         self.setUp()
-        
-        
-    
-    
-        
-
-
-
-
