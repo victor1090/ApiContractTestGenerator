@@ -6,7 +6,7 @@ Parar executar o script de geração automática de teste basta executar o arqui
 
 Após o processamento da documentação será exibido uma lista de urls.
 
-Para o gerar o teste de uma url especifica basta digitar o número correspondente
+Para gerar o teste de uma url especifica basta digitar o número correspondente
 
 Para gerar os testes de todas as urls basta digitar -1.
 
@@ -25,7 +25,7 @@ Os arquivos de configuração possuem o esqueleto da entrada de dados necessári
 Por exemplo: Uma requisição GET que necessita de um id para buscar o objeto no banco, o id deverá ser informado no arquivo de configuração no espaço adequado. Da mesma forma no arquivo ConfigurationUnsucessfull deverá ser informado um id errado, caso o objetivo seja a simulação de uma resposta 404 Not Found da API objetivo.
 
 ### Esqueleto do arquivo de configuração
-Como no mesmo arquivo de testes possuem todas os testes da url e a mesma pode ter vários metodós (GET,POST,PUT), no arquivo de configuração são colocados todos os dados das requisições desses métodos de acordo com o esqueleto abaixo.
+Como no mesmo arquivo de testes possuem todas os testes da url e a mesma pode ter vários métodos (GET,POST,PUT), no arquivo de configuração são colocados todos os dados das requisições desses métodos de acordo com o esqueleto abaixo.
 ```
 {
 	"{url}_{tipo_metodo}{numero}":{
