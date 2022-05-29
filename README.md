@@ -6,7 +6,7 @@ Parar executar o script de geração automática de teste basta executar o arqui
 
 Após o processamento da documentação será exibido uma lista de urls.
 
-Para o gerar o teste de uma url especifica basta digitar o número correspondente
+Para gerar o teste de uma url especifica basta digitar o número correspondente
 
 Para gerar os testes de todas as urls basta digitar -1.
 
