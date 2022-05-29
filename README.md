@@ -44,3 +44,16 @@ Os arquivos de teste possuem a chamada de requisição para a API enviando os pa
 Essa informação é preenchida com os dados da documentação, caso você queria testar a API em outra url é necessário alterar o arquivo de testes_util.py. **A alteração implica em todos os outros testes utilizando a nova url**.
 
 Após a requisição são definidos vários "asserts" para verificar se a informação retornada da API é condizente com o descrito na documentação. O primeiro "assert" a ser feito é o de status checando se a resposta da requisição é o status esperado. Em seguida são realizados dois "asserts" para cada campo que deveria constar na resposta, um deles checando se o campo está presente na resposta e o segundo verifica se o tipo do campo é o mesmo que foi informado na documentação.
+
+### Limitações
+O gerador de script não trabalhar com as informações de cabeçalhos e nem de segurança, caso seja necessário adicionar essa informação no script deverá ser feita pelo usuário.
+
+Por exemplo a adição de um bearer token na requisição pode ser feita adicionando essa campo na função setUp() da classe de testes.
+
+self.headers = {'Authorization': 'Bearer ' + auth_token}
+
+Após isso basta adicionar o seguinte código na linha referente a cada requisição.
+
+response = requests.get(f'http://{self.base_url}/{url}'**, headers = self.headers**)
+
+Outras configurações de segurança e cabeçalho podem ser adicionadas da mesma forma.
