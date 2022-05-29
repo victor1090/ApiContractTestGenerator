@@ -48,7 +48,7 @@ Após a requisição são definidos vários "asserts" para verificar se a inform
 ### Limitações
 O gerador de script não trabalhar com as informações de cabeçalhos e nem de segurança, caso seja necessário adicionar essa informação no script deverá ser feita pelo usuário.
 
-Por exemplo a adição de um bearer token na requisição pode ser feita adicionando essa campo na função setUp() da classe de testes.
+Por exemplo a adição de um bearer token na requisição pode ser feita adicionando esse campo na função setUp() da classe de testes.
 
 self.headers = {'Authorization': 'Bearer ' + auth_token}
 
