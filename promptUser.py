@@ -30,24 +30,27 @@ else:
 generatorClasses = GeneratorClasses(documentation)
 base_data, paths, objects = generatorClasses.createClasses()
 
-
-print("Codigo: url")
-print("-1: Gerar Todos")
+print ("{:<8} {:<15}".format('Code','URL'))
+print ("{:<8} {:<15}".format('----','-----------------------------------------\n'))
+print ("{:<8} {:<15}".format("-1", "Generate All"))
 for index, url in enumerate(paths.urls):
-    print(f"{index}:{url.url}")
-code = int(input("Digite o código do teste a ser gerado:"))
+    print ("{:<8} {:<15}".format(index, url.url))
+print("\n")
+code = int(input("Enter the code of the url to generate the tests:"))
 if(code != -1):
     try:
         GeneratorTest(base_data,paths.urls[code],objects)
-        print(f"Os testes para a url {paths.urls[code].url} foi gerado na pasta Testes")
+        folder = paths.urls[code].url.replace("/", "_");
+        print(f"The tests for url {paths.urls[code].url} was generated in the Tests/{folder} folder")
     except Exception as e:
-        print(f"Não foi possível gerar os testes para a url {paths.urls[code].url}")
+        print(f"Error:Could not generate the tests for the url {paths.urls[code].url}")
         print(e)
 else:
     for urls in paths.urls:
         try:
             GeneratorTest(base_data, urls, objects)
-            print(f"Os testes para a url {urls.url} foi gerado na pasta Testes")
+            folder = url.url.replace("/", "_");
+            print(f"The tests for url  {urls.url} was generated in the Tests/{folder} folder")
         except Exception as e:
-            print(f"Não foi possível gerar os testes para a url {urls.url}")
+            print(f"Error:Could not generate the tests for the url {urls.url}")
             print(e)

@@ -268,25 +268,25 @@ class GeneratorTest():
     def setUp(self):
         try:
             #Directory where the tests were created
-            create_dir("Testes")
+            create_dir("Tests")
             #creating a directory with utils file
-            utils = create_arq("Testes/util","testes_util")
+            utils = create_arq("Tests/util","tests_util")
             create_util(utils,self.base.hostName+self.base.basePath)
             close_arq(utils)
             #Creating the test directory and files
-            print("-Criando diretorio e arquivos do teste")
+            print("-Creating test directory and files")
             path_arq = self.path.url.replace("/", "_");
             #Sucessfull test
-            print("-Criando Testes de Sucesso")
-            arq = create_arq("Testes/"+path_arq,path_arq+"Sucessfull")
-            config = create_config("Testes/"+path_arq,"ConfigurationSucessfull")
+            print("-Creating Success Tests")
+            arq = create_arq("Tests/"+path_arq,path_arq+"Sucessfull")
+            config = create_config("Tests/"+path_arq,"ConfigurationSucessfull")
             initialConfig(config)
             write_imports(arq)
             write_base(arq,"AutomaticTestSucessfull","ConfigurationSucessfull")
             #Unsucessfull test
-            print("-Criando Testes de Falha")
-            arq2 = create_arq("Testes/"+path_arq,path_arq+"Unsucessfull")
-            config2 = create_config("Testes/"+path_arq,"ConfigurationUnsucessfull")
+            print("-Creating Failure Tests")
+            arq2 = create_arq("Tests/"+path_arq,path_arq+"Unsucessfull")
+            config2 = create_config("Tests/"+path_arq,"ConfigurationUnsucessfull")
             initialConfig(config2)
             write_imports(arq2)
             write_base(arq2,"AutomaticTestUnsucessfull","ConfigurationUnsucessfull")
@@ -311,6 +311,7 @@ class GeneratorTest():
             close_arq(config2)
         except Exception as e:
             print(e)
+            raise(e)
             
         
     def __init__(self, base, path, objects):

@@ -89,7 +89,7 @@ class Methods:
     
     def searchByRangeCode(self,rangeInitial,rangeFinal):
         for response in self.responses:
-            if(int(response.code) >= rangeInitial and int(response.code) <= rangeFinal):
+            if(isinstance(response.code,int) and int(response.code) >= rangeInitial and int(response.code) <= rangeFinal):
                 return response
         return 
 class Parameters:

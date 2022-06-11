@@ -49,7 +49,7 @@ def write_imports(arq):
     imports.append("import sys"+ newline)
     imports.append("import os"+ newline)
     imports.append("sys.path.insert(1, '../util')"+ newline)
-    imports.append("from testes_util import *"+ newline +newline)
+    imports.append("from tests_util import *"+ newline +newline)
     arq.writelines(imports)
     
 def write_base(arq,name,configName):
