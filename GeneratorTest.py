@@ -18,7 +18,7 @@ count_test = 0
 class TypeNotDefinedError(Exception):
     pass
 
-class TestGenerator():
+class GeneratorTest():
         
     def toType(self,string):
         if(string =="string"):
