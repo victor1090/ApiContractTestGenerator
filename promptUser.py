@@ -43,8 +43,7 @@ if(code != -1):
         folder = paths.urls[code].url.replace("/", "_");
         print(f"The tests for url {paths.urls[code].url} was generated in the Tests/{folder} folder")
     except Exception as e:
-        print(f"Error:Could not generate the tests for the url {paths.urls[code].url}")
-        print(e)
+        print(f"Error:Could not generate the tests for the url {paths.urls[code].url}" + repr(e))
 else:
     for urls in paths.urls:
         try:
@@ -52,5 +51,4 @@ else:
             folder = url.url.replace("/", "_");
             print(f"The tests for url  {urls.url} was generated in the Tests/{folder} folder")
         except Exception as e:
-            print(f"Error:Could not generate the tests for the url {urls.url}")
-            print(e)
+            print(f"Error:Could not generate the tests for the url {urls.url}" + repr(e))

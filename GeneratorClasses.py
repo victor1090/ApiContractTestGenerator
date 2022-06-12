@@ -5,6 +5,9 @@ Created on Sun Jan 30 22:12:50 2022
 @author: victo
 """
 from Classes import Base,Objects,Schemas,Paths, Methods, Url, Parameters, Responses
+import logging
+
+logger = logging.getLogger()
 
 class GeneratorClasses():
 
@@ -37,8 +40,7 @@ class GeneratorClasses():
           paths.urls = list_urls
           return base_data, paths, objects
         except Exception as e:
-            print("Error: Unable to process documentation successfully")
-            print(e)
+            print("Error: Unable to process documentation successfully: "+ repr(e))
             exit()
             
     def __init__(self, documentation):
