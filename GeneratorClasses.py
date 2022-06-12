@@ -37,8 +37,7 @@ class GeneratorClasses():
           paths.urls = list_urls
           return base_data, paths, objects
         except Exception as e:
-            print("Error: Unable to process documentation successfully")
-            print(e)
+            print("Error: Unable to process documentation successfully: "+ repr(e))
             exit()
             
     def __init__(self, documentation):

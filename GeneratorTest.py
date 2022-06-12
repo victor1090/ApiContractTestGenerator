@@ -5,7 +5,7 @@ Created on Sun Mar 27 17:48:35 2022
 
 @author: victor1090
 """
-from utils.json_util import *
+from utils.file_util import *
 
 newline = "\n"
 tab = "\t"
@@ -173,13 +173,13 @@ class GeneratorTest():
         return config
     
     
-    def createTeste(self,arq,method,only_params_required,range_responses,config):
+    def createTest(self,arq,method,only_params_required,range_responses,config):
         global count_test
         count_test += 1
         lines = list()
         lines.append(f"{tab}#Caso de Teste do Methodo:{method.method_type}"+newline)
         
-        #Pegando a resposta nessa parte para colocar na descrição do methodo
+        #Pegando a resposta nessa parte para colocar na descrição do methodo        
         responses = method.searchByRangeCode(range_responses[0],range_responses[1])
         if(not responses == None):
             lines.append(f"{tab}#Espera-se que seja retornado status code = {responses.code}"+newline)
@@ -192,7 +192,7 @@ class GeneratorTest():
             lines.append(f"{tab}#Onde todos os parâmetros(obrigatorios e opcionais) são enviados na requisição"+newline)
         lines.append(f"{tab}def test{count_test}_sucessfull_{method.method_type}(self):"+newline)
         
-        url_request = "http://{self.base_url}"+str(self.path.url)
+        url_request = "http://{self.base_url}"+str(self.url.url)
         parametros = method.parameters
         
         config_params = f"\t\"data{method.method_type}{count_test}\":" +"{\n"
@@ -255,6 +255,7 @@ class GeneratorTest():
             if(responses.schemas != None):
                 lines.append(f"{doubletab}response_data = response.json()"+newline) #Transformando a resposta da request em json
                 lines.append("".join(self.createAssertsResponseSchemas(responses.schemas)))
+
         arq.writelines(lines)
         
         
@@ -275,7 +276,7 @@ class GeneratorTest():
             close_arq(utils)
             #Creating the test directory and files
             print("-Creating test directory and files")
-            path_arq = self.path.url.replace("/", "_");
+            path_arq = self.url.url.replace("/", "_");
             #Sucessfull test
             print("-Creating Success Tests")
             arq = create_arq("Tests/"+path_arq,path_arq+"Sucessfull")
@@ -293,17 +294,17 @@ class GeneratorTest():
             #Ranges of responses
             range_sucessfull = [200,299]
             range_unsucessfull = [400,599]
-            for method in self.path.methods:
-                self.createTeste(arq,method,False,range_sucessfull,config)
-                self.createTeste(arq2,method,False,range_unsucessfull,config2)
+            for method in self.url.methods:
+                self.createTest(arq,method,False,range_sucessfull,config)
+                self.createTest(arq2,method,False,range_unsucessfull,config2)
                 if(not method.isOnlyRequiredParams()):
-                    self.createTeste(arq,method,True,range_sucessfull,config)   
-                    self.createTeste(arq2,method,True,range_unsucessfull,config2)
+                    self.createTest(arq,method,True,range_sucessfull,config)   
+                    self.createTest(arq2,method,True,range_unsucessfull,config2)
             #write floor of archives
             arq.writelines(self.writeFloor())
             arq2.writelines(self.writeFloor())
-            finalConfig(config)
-            finalConfig(config2)
+            endConfig(config)
+            endConfig(config2)
             #Closes all archives
             close_arq(arq)
             close_arq(config)
@@ -314,8 +315,8 @@ class GeneratorTest():
             raise(e)
             
         
-    def __init__(self, base, path, objects):
+    def __init__(self, base, url, objects):
         self.base = base
-        self.path = path
+        self.url = url
         self.objects = objects
         self.setUp()

@@ -8,28 +8,28 @@ class CreateArchivesError(Exception):
 class ClosesArchivesError(Exception):
     pass
 
-def create_arq(diretorio,nome):
+def create_arq(folder,name):
     try:
-        create_dir(diretorio)
-        arq = open(diretorio + "/" + nome+".py", "w")
+        create_dir(folder)
+        arq = open(folder + "/" + name+".py", "w")
         return arq
     except Exception as e:
         print(e)
         raise CreateArchivesError("Error creating files")
 
-def create_config(diretorio,nome):
+def create_config(folder,name):
     try: 
-        create_dir(diretorio)
-        config = open(diretorio + "/" + nome+".json", "w")
+        create_dir(folder)
+        config = open(folder + "/" + name+".json", "w")
         return config
     except Exception as e:
         print(e)
         raise CreateArchivesError("Error creating files")
 
-def create_dir(diretorio):
+def create_dir(folder):
     try:
-        if not os.path.isdir(diretorio):
-            os.mkdir(diretorio)
+        if not os.path.isdir(folder):
+            os.mkdir(folder)
     except Exception as e:
         print(e)
         raise CreateArchivesError("Error creating directory")
@@ -66,7 +66,7 @@ def initialConfig(config):
     lines.append("{"+ newline)
     config.writelines(lines)
 
-def finalConfig(config):
+def endConfig(config):
     lines = list()
     lines.append("}")
     config.writelines(lines)
