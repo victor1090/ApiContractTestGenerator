@@ -5,9 +5,6 @@ Created on Sun Jan 30 22:12:50 2022
 @author: victo
 """
 from Classes import Base,Objects,Schemas,Paths, Methods, Url, Parameters, Responses
-import logging
-
-logger = logging.getLogger()
 
 class GeneratorClasses():
 
