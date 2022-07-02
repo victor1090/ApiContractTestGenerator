@@ -18,6 +18,9 @@ count_test = 0
 class TypeNotDefinedError(Exception):
     pass
 
+class ResponseSchemaNotMappedError(Exception):
+    pass
+
 class GeneratorTest():
         
     def toType(self,string):
@@ -104,10 +107,12 @@ class GeneratorTest():
     
     def createAssetsAdditionalProperties(self,additional, type_item):
         lines = list()
-        if(type_item =="object"):
-            lines.append(f"{doubletab}self.assertEqual(type(response_data),dict){newline}")
-        else:
-            print("Não foi possível decifrar Schema Additional Properties para a geração de assert de respostas.")
+        try:
+            python_type = toType(type_item)
+            lines.append(f"{doubletab}self.assertEqual(type(response_data),{python_type}){newline}")
+        except Exception as e:
+            print("Unable to decipher Schema Additional Properties for response assert generation.")
+            raise(e)
         return lines
     
     def createAssetsItems(self,items,type_item):
@@ -134,6 +139,8 @@ class GeneratorTest():
                 lines.append("".join(self.createAssetsItems(schema.get("items"), type_schema)))
             elif(schema.get("additionalProperties")):
                 lines.append("".join(self.createAssetsAdditionalProperties(schema.get("additionalProperties"), type_schema)))
+            else:
+                raise ResponseSchemaNotMappedError(f"The schema of response {schema} used in the documentation is not mapped!")
         return lines
         
                
@@ -173,24 +180,18 @@ class GeneratorTest():
         return config
     
     
-    def createTest(self,arq,method,only_params_required,range_responses,config):
+    def createTest(self,arq,method,only_params_required,response,config):
         global count_test
         count_test += 1
         lines = list()
-        lines.append(f"{tab}#Caso de Teste do Methodo:{method.method_type}"+newline)
-        
-        #Pegando a resposta nessa parte para colocar na descrição do methodo        
-        responses = method.searchByRangeCode(range_responses[0],range_responses[1])
-        if(not responses == None):
-            lines.append(f"{tab}#Espera-se que seja retornado status code = {responses.code}"+newline)
-        else:
-            lines.append(f"{tab}#Espera-se que seja retornado status code = {range_responses[0]}"+newline)
-        #Trocar o status code para o status na resposta
+        lines.append(f"{tab}#Caso de Teste do Method:{method.method_type}"+newline)
+        lines.append(f"{tab}#Espera-se que seja retornado status code = {response.code}"+newline)
+        type_test ="sucessfull"  if(int(response.code) < 300 and int(response.code) >199) else "unsucessfull"
         if(only_params_required):
             lines.append(f"{tab}#Onde apenas os parametros obrigatorios são enviados na requisição"+newline)
         else:
             lines.append(f"{tab}#Onde todos os parâmetros(obrigatorios e opcionais) são enviados na requisição"+newline)
-        lines.append(f"{tab}def test{count_test}_sucessfull_{method.method_type}(self):"+newline)
+        lines.append(f"{tab}def test{count_test}_{type_test}_{method.method_type}(self):"+newline)
         
         url_request = "http://{self.base_url}"+str(self.url.url)
         parametros = method.parameters
@@ -247,14 +248,13 @@ class GeneratorTest():
         else:
             lines.append(f"{doubletab}response = requests.{method.method_type}(f'{url_request}')"+newline)
             
-            
         #Fim da montagem da requisição
+        
         #Inicio da montagem das respostas
-        if(not responses == None):
-            lines.append(f"{doubletab}self.assertEqual(response.status_code, {responses.code})"+newline)
-            if(responses.schemas != None):
-                lines.append(f"{doubletab}response_data = response.json()"+newline) #Transformando a resposta da request em json
-                lines.append("".join(self.createAssertsResponseSchemas(responses.schemas)))
+        lines.append(f"{doubletab}self.assertEqual(response.status_code, {response.code})"+newline)
+        if(response.schemas != None):
+            lines.append(f"{doubletab}response_data = response.json()"+newline) #Transformando a resposta da request em json
+            lines.append("".join(self.createAssertsResponseSchemas(response.schemas)))
 
         arq.writelines(lines)
         
@@ -291,15 +291,22 @@ class GeneratorTest():
             initialConfig(config2)
             write_imports(arq2)
             write_base(arq2,"AutomaticTestUnsucessfull","ConfigurationUnsucessfull")
-            #Ranges of responses
-            range_sucessfull = [200,299]
-            range_unsucessfull = [400,599]
+            
             for method in self.url.methods:
-                self.createTest(arq,method,False,range_sucessfull,config)
-                self.createTest(arq2,method,False,range_unsucessfull,config2)
-                if(not method.isOnlyRequiredParams()):
-                    self.createTest(arq,method,True,range_sucessfull,config)   
-                    self.createTest(arq2,method,True,range_unsucessfull,config2)
+                responses_sucessfull = method.searchByRangeCode(200, 299)
+                responses_unsucessfull = method.searchByRangeCode(400, 599)
+                if(len(responses_sucessfull) == 0):
+                    print(f"Warning: Incomplete success test generation: no response has been defined for the method: {method.method_type}!")
+                if(len(responses_unsucessfull) == 0):
+                    print(f"Warning: Incomplete unsuccessful test generation: no response has been defined for the method: {method.method_type}!")
+                for response in responses_sucessfull:
+                    self.createTest(arq, method, False, response ,config)
+                    if(not method.isOnlyRequiredParams()):
+                        self.createTest(arq, method, True, response ,config)  
+                for response in responses_unsucessfull:
+                    self.createTest(arq2, method, False, response, config2)
+                    if(not method.isOnlyRequiredParams()):
+                        self.createTest(arq2, method, True, response, config2)
             #write floor of archives
             arq.writelines(self.writeFloor())
             arq2.writelines(self.writeFloor())
@@ -311,7 +318,6 @@ class GeneratorTest():
             close_arq(arq2)
             close_arq(config2)
         except Exception as e:
-            print(e)
             raise(e)
             
         

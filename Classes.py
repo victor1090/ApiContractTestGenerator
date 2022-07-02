@@ -88,10 +88,11 @@ class Methods:
         return onlyRequired
     
     def searchByRangeCode(self,rangeInitial,rangeFinal):
+        list_response = list()
         for response in self.responses:
             if(response.code.isdigit() and int(response.code) >= rangeInitial and int(response.code) <= rangeFinal):
-                return response
-        return 
+                list_response.append(response)
+        return list_response
 class Parameters:
     "Represents the parameters to be sent in each method"
     def __init__(self,name,into,description='',required=False, type='',schema=''):
